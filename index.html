@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>IWA Assignment 3</title>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript" id="jquery"></script>
+    <script src="http://maps.googleapis.com/maps/api/js"></script>
+
+    <LINK href="style.css" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript">
+
+        var config = {
+            apiKey: '2VDWHEVTSR0SBYXCOIG0V4P4JJY0PEVJQXHQJ1P4YPEAF3KZ',
+            authUrl: 'https://foursquare.com/',
+            apiUrl: 'https://api.foursquare.com/'
+        };
+
+        var CLIENT_KEY ='2VDWHEVTSR0SBYXCOIG0V4P4JJY0PEVJQXHQJ1P4YPEAF3KZ';
+        var CLIENT_SECRET = 'Z0PMCBD0ULJOFUK2F0M4J3UJ1OJJYNAXQDPVYOLLWSBCWKVU';
+
+        var map;
+
+        function buttonProcess(){
+            var mapProp = {
+                center:new google.maps.LatLng(51.508742,-0.120850),
+                zoom:5,
+                mapTypeId:google.maps.MapTypeId.ROADMAP
+            };
+            var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+
+            //console.log('test');
+            var locationInput = document.getElementById('locationInput').value;
+            var venueInput = document.getElementById('venueInput').value;
+            var query = config.apiUrl + 'v2/venues/search?near='+locationInput+'&query='+venueInput+'&client_id=' + CLIENT_KEY + '&client_secret=' + CLIENT_SECRET + '&v=20140601';
+            //console.log(query);
+            $.getJSON(query, {}, function(data) {
+                console.log(data);
+                var allVenues = data['response']['venues'];
+                console.log(allVenues);
+                for (var i = 0; i < allVenues.length; i++) {
+                    var lat = allVenues[i]['location']['lat'];
+                    var lng = allVenues[i]['location']['lng'];
+                    var content = allVenues[i]['name'];
+
+                    //place marker at lat lng
+                    var markerLocation=new google.maps.LatLng(lat,lng);
+                    var marker = new google.maps.Marker({
+                        position:markerLocation
+                    });
+
+
+                    var iw = new google.maps.InfoWindow({
+                        content: content
+                    });
+
+                    google.maps.event.addListener(marker, "click", function (e) { iw.open(map, this); });
+
+                    marker.setMap(map);
+                }
+
+
+                map.panTo(new google.maps.LatLng( lat, lng ) );
+
+            })
+        }
+
+        //]]>
+    </script>
+
+
+</head>
+<body>
+<div id="form">
+    Location: <input type="text" id="locationInput">
+    venue: <input type="text" id="venueInput">
+    <button onclick="buttonProcess()" id="startButton">Go</button>
+</div>
+
+
+<div id="googleMap" style="width:500px;height:380px;"></div>
+</body>
+</html>  

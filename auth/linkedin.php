@@ -4,7 +4,7 @@
  *  authenticate our application.
  */
 
-require_once("../include/auth.php");
+require_once("../include/iwa_auth.php");
 
 // Ensure all required parameters are set.
 if (!isset($_GET['code']) || !isset($_GET['state'])) {
