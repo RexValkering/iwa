@@ -91,10 +91,13 @@ function linkedin_login_url() {
         $_SESSION["linkedin_auth_state"] = $auth;
     }
 
+    // Formatted request uri.
+    $requri = preg_replace('#[^/]*$#', '', $_SERVER['REQUEST_URI']);
+
     // Array of (extra) get parameters to pass.
     $data = [
         'client_id' => '759ovlctqc3v62',
-        'redirect_uri' => 'http://' . $_SERVER['SERVER_NAME'] . '/auth/linkedin.php',
+        'redirect_uri' => 'http://' . $_SERVER['SERVER_NAME'] . $requri . 'auth/linkedin.php',
         'state' => $auth
     ];
 
