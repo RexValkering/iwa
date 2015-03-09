@@ -1,8 +1,6 @@
 <?php 
 require_once('include/includes.php');
 
-print_r(get_included_files());
-
 $url = linkedin_login_url();
 ?>
 
