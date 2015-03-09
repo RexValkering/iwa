@@ -4,7 +4,7 @@
  *  authenticate our application.
  */
 
-require_once("../include/iwa_auth.php");
+require_once("../include/includes.php");
 
 // Ensure all required parameters are set.
 if (!isset($_GET['code']) || !isset($_GET['state'])) {
@@ -27,5 +27,5 @@ if ($state != linkedin_auth_state()) {
 
 // All is well.
 linkedin_authenticate($_GET['code']);
-header("Location: /application.php");
+header("Location: " . site_root() . "application.php");
 exit(0);
