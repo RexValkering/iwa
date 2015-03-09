@@ -13,7 +13,7 @@ $logout_required = ["/index.php"];
 if (in_array($page, $logout_required)) {
     // Only logged out users can access this page.
     if (is_logged_in()) {
-        header("Location: /application.php");
+        header("Location: application.php");
         exit(0);
     }
 }
@@ -21,7 +21,7 @@ if (in_array($page, $logout_required)) {
 else if (in_array($page, $login_required)) {
     // This page requires a login.
     if (!is_logged_in()) {
-        header("Location: /index.php");
+        header("Location: index.php");
         exit(0);
     }
 }
