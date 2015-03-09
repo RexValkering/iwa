@@ -1,0 +1,52 @@
+/* 0. General items. */
+body {
+    background-color: #1A2D58;
+}
+
+.top-buffer {
+    margin-top: 5px;
+}
+
+.top-buffer-large {
+    margin-top: 20px;
+}
+
+/* 1. Landing page items. */
+#landing {
+    background-color: white;
+    max-width: 350px;
+    min-height: 200px;
+    margin: auto;
+    margin-top: 300px;
+    opacity: 1.0;
+}
+
+#linkedin-login {
+    margin: auto;
+    background-image: url('../img/linkedin_default.png');
+    width: 292px;
+    height: 40px;
+}
+
+#application-login {
+    margin: auto;
+    width: 292px;
+}
+
+#linkedin-login:hover {
+    background-image: url('../img/linkedin_hover.png');
+}
+
+#linkedin-login:active {
+    background-image: url('../img/linkedin_active.png');
+}
+
+/* 2. Application page items. */
+#application {
+    background-color: white;
+    max-width: 800px;
+    min-height: 600px;
+    margin: auto;
+    margin-top: 150px;
+    opacity: 1.0;
+}
