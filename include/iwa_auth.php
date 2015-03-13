@@ -3,28 +3,39 @@
 session_start();
 
 $page = $_SERVER['SCRIPT_NAME'];
-$login_required = ["/application.php"];
-$logout_required = ["/index.php"];
+$login_required = [site_root() . "application.php"];
+$logout_required = [site_root() . "index.php"];
 
 /**
  * By default, pages are not redirected and do not require a login.
  * Is there a more secure way to do this without making developing a pain?
  */
-if (in_array($page, $logout_required)) {
-    // Only logged out users can access this page.
-    if (is_logged_in()) {
-        header("Location: " . site_root() . "application.php");
-        exit(0);
-    }
-}
+// if (in_array($page, $logout_required)) {
+//     // Only logged out users can access this page.
+//     if (is_logged_in()) {
+//         header("Location: " . site_root() . "application.php");
+//         exit(0);
+//     }
+// }
 
-else if (in_array($page, $login_required)) {
-    // This page requires a login.
-    if (!is_logged_in()) {
-        header("Location: " . site_root() . "index.php");
-        exit(0);
-    }
-}
+// else if (in_array($page, $login_required)) {
+//     // This page requires a login.
+//     if (!is_logged_in()) {
+//         header("Location: " . site_root() . "index.php");
+//         exit(0);
+//     }
+// }
+
+/**
+ *  Make sure the linkedin xml file exists and is loaded.
+ *  The __FILE__ is needed to make it work for all pages.
+ */
+global $linkedin;
+$linkedin = simplexml_load_file(dirname(__FILE__)."/../../linkedin.xml");
+// If nonexistent, show an error.
+if ($linkedin === false) { ?>
+    <p class="text-warning">Error, could not find/read LinkedIn XML file.</p>
+<?php }
 
 /**
  *  Whether the user is logged into the application. This does not mean the
@@ -80,6 +91,36 @@ function linkedin_expiry_date() {
 }
 
 /**
+ *  Get the linkedin client id.
+ */
+function linkedin_client_id() {
+    global $linkedin;
+    return ($linkedin ? (string) $linkedin->api_key : "");
+}
+
+/**
+ *  Get the linkedin client secret.
+ */
+function linkedin_client_secret() {
+    global $linkedin;
+    return ($linkedin ? (string) $linkedin->api_secret : "");
+}
+
+/**
+ *  Get the linkedin access token.
+ */
+function linkedin_access_token() {
+    return (isset($_SESSION["linkedin_access_token"]) ? $_SESSION["linkedin_access_token"] : false);
+}
+
+/**
+ *  Get the linkedin redirect uri (file that handles linkedin callbacks).
+ */
+function linkedin_redirect_uri() {
+    return 'http://' . $_SERVER['SERVER_NAME'] . site_root() . 'auth/linkedin.php';
+}
+
+/**
  *  Create and return a LinkedIn login url for the front page.
  */
 function linkedin_login_url() {
@@ -91,13 +132,10 @@ function linkedin_login_url() {
         $_SESSION["linkedin_auth_state"] = $auth;
     }
 
-    // Formatted request uri.
-    $requri = preg_replace('#[^/]*$#', '', $_SERVER['REQUEST_URI']);
-
     // Array of (extra) get parameters to pass.
     $data = [
-        'client_id' => '759ovlctqc3v62',
-        'redirect_uri' => 'http://' . $_SERVER['SERVER_NAME'] . $requri . 'auth/linkedin.php',
+        'client_id' => linkedin_client_id(), //'759ovlctqc3v62',
+        'redirect_uri' => linkedin_redirect_uri(),
         'state' => $auth
     ];
 
@@ -110,4 +148,33 @@ function linkedin_login_url() {
 
     // Return result.
     return $url;
+}
+
+/**
+ *  Return a LinkedIn Request Token url for after logging in.
+ */
+function linkedin_token_url() {
+    // Return result.
+    return "https://www.linkedin.com/uas/oauth2/accessToken";
+}
+
+/**
+ *  Create and return a LinkedIn Request Token parameter array.
+ */
+function linkedin_token_data() {
+    // Check if user is authenticated.
+    $code = linkedin_auth_code();
+    if ($code === false)
+        return [];
+
+    // Array of POST parameters to pass.
+    $data = [
+        'grant_type' => urlencode('authorization_code'),
+        'code' => urlencode($code),
+        'redirect_uri' => linkedin_redirect_uri(),
+        'client_id' => urlencode(linkedin_client_id()),
+        'client_secret' => urlencode(linkedin_client_secret())
+    ];
+
+    return $data;
 }
