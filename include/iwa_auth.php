@@ -3,28 +3,28 @@
 session_start();
 
 $page = $_SERVER['SCRIPT_NAME'];
-$login_required = [site_root() . "application.php"];
-$logout_required = [site_root() . "index.php"];
+$login_required = ["application.php"];
+$logout_required = ["index.php"];
 
 /**
  * By default, pages are not redirected and do not require a login.
  * Is there a more secure way to do this without making developing a pain?
  */
-// if (in_array($page, $logout_required)) {
-//     // Only logged out users can access this page.
-//     if (is_logged_in()) {
-//         header("Location: " . site_root() . "application.php");
-//         exit(0);
-//     }
-// }
+if (in_array($page, $logout_required)) {
+    // Only logged out users can access this page.
+    if (is_logged_in()) {
+        header("Location: " . site_root() . "application.php");
+        exit(0);
+    }
+}
 
-// else if (in_array($page, $login_required)) {
-//     // This page requires a login.
-//     if (!is_logged_in()) {
-//         header("Location: " . site_root() . "index.php");
-//         exit(0);
-//     }
-// }
+else if (in_array($page, $login_required)) {
+    // This page requires a login.
+    if (!is_logged_in()) {
+        header("Location: " . site_root() . "index.php");
+        exit(0);
+    }
+}
 
 /**
  *  Make sure the linkedin xml file exists and is loaded.
