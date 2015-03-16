@@ -34,3 +34,9 @@ function linkedin_get_suggested_companies() {
     $result = linkedin_get_request($url, ["format" => "json"]);
     return json_decode($result);
 }
+
+function linkedin_get_suggested_jobs() {
+    $url = "https://api.linkedin.com/v1/people/~/suggestions/job-suggestions:(jobs)";
+    $result = linkedin_get_request($url, ["format" => "json"]);
+    return json_decode($result);
+}

@@ -27,14 +27,21 @@ else if (in_array($page, $login_required)) {
 }
 
 /**
- *  Make sure the linkedin xml file exists and is loaded.
+ *  Make sure the linkedin and glassdoor xml files exist and are loaded.
  *  The __FILE__ is needed to make it work for all pages.
  */
-global $linkedin;
+global $linkedin, $glassdoor;
+
 $linkedin = simplexml_load_file(dirname(__FILE__)."/../../linkedin.xml");
 // If nonexistent, show an error.
 if ($linkedin === false) { ?>
     <p class="text-warning">Error, could not find/read LinkedIn XML file.</p>
+<?php }
+
+$glassdoor = simplexml_load_file(dirname(__FILE__)."/../../glassdoor.xml");
+// If nonexistent, show an error.
+if ($glassdoor === false) { ?>
+    <p class="text-warning">Error, could not find/read Glassdoor XML file.</p>
 <?php }
 
 /**
@@ -43,6 +50,22 @@ if ($linkedin === false) { ?>
  */
 function is_logged_in() {
     return isset($_SESSION["application_id"]);
+}
+
+/**
+ *  Get the glassdoor partner id.
+ */
+function glassdoor_partner_id() {
+    global $glassdoor;
+    return ($glassdoor ? (string) $glassdoor->partnerid : "");
+}
+
+/**
+ *  Get the glassdoor partner key.
+ */
+function glassdoor_partner_key() {
+    global $glassdoor;
+    return ($glassdoor ? (string) $glassdoor->key : "");
 }
 
 /**

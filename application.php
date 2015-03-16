@@ -27,6 +27,15 @@ require_once("include/includes.php"); ?>
 </div>
 </div>
 
+<div id="jobs">
+<div class="row">
+<div class="col-xs-12 text-center">
+<a href="#" onclick="fill_jobs(); return false;">Load jobs</a>
+</div>
+</div>
+</div>
+
+
 <div class="row">
 <div class="col-xs-12 text-center">
 <a href="<?php echo site_root(); ?>auth/logout.php">Logout</a></div>
