@@ -52,4 +52,41 @@ body {
     margin-top: 150px;
     opacity: 1.0;
     color: black;
+    position: relative;
+}
+#application div#actions {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 2px 4px;
+}
+#application div.col-xs-12 {
+    padding-left: 0;
+}
+#application ul#jobs {
+    width: 250px;
+    border-right: 1px solid #1A2D58;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    float: left;
+}
+#application ul#jobs li {
+    padding: 20px 15px;
+    border-bottom: 1px dotted #1A2D58;
+    font-weight: bold;
+    cursor: pointer;
+
+    -webkit-transition: background .2s ease-in;
+    -moz-transition: background .2s ease-in;
+    transition: background .2s ease-in;
+}
+#application ul#jobs li:hover {
+    background: #E0E7F5;
+}
+
+#application div#job {
+    width: 550px;
+    float: left;
+    padding: 0 20px;
 }

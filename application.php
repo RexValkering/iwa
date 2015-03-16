@@ -9,37 +9,30 @@ require_once("include/includes.php"); ?>
     <link href="css/iwa.css" rel="stylesheet" type="text/css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="js/iwa.js"></script>
+    <script src="js/application.js"></script>
 </head>
 <body>
-<div id="application" class="container">
-  
-<div class="row">
-<div class="col-xs-12 text-center" id="iwa-profile-link">
-<a href="#" onclick="fill_profile(); return false;">Load profile</a>
-</div>
-</div>
+    <div id="application" class="container">
+        <div class="row">
+            <ul id="jobs">
+                <!-- filled by js -->
+            </ul>
+            <div id="job" style="display:none">
+                <h2 id="title">Job title?</h2>
+                <p  id="description"></p>
 
-<div id="companies">
-<div class="row">
-<div class="col-xs-12 text-center">
-<a href="#" onclick="fill_companies(); return false;">Load companies</a>
-</div>
-</div>
-</div>
+                <h2 id="about"></h2>
 
-<div id="jobs">
-<div class="row">
-<div class="col-xs-12 text-center">
-<a href="#" onclick="fill_jobs(); return false;">Load jobs</a>
-</div>
-</div>
-</div>
+                <p>Insert Wikipedia summary here</p>
 
+                <h2>More information</h2>
 
-<div class="row">
-<div class="col-xs-12 text-center">
-<a href="<?php echo site_root(); ?>auth/logout.php">Logout</a></div>
-</div>
-</div>
+                <p>Insert Glassdoor summary here</p>
+            </div>
+            <div class="text-center" id="actions">
+                <a href="<?php echo site_root(); ?>auth/logout.php">Logout</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
