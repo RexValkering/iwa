@@ -11,9 +11,10 @@ function glassdoor_get_request($url, $data) {
     $ch = curl_init();
     $query_params = http_build_query($data);
     curl_setopt($ch, CURLOPT_URL, $url . $query_params);
-    //curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    //echo $url . $query_params;
 
     $result = curl_exec($ch);
 

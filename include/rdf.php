@@ -1,38 +1,40 @@
 <?php
 
 function prefix() {
-    return "PREFIX dc: <http://purl.org/dc/elements/1.1/>;
-            PREFIX iwa: <http://iwa.rexvalkering.nl/>;";
+    return "PREFIX dc: <http://purl.org/dc/elements/1.1/>
+            PREFIX iwa: <http://iwa.rexvalkering.nl/>
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>";
 }
 
-function build_turtle_from_array($prefix, $data, $type, $postfix) {
-    $query = $prefix;
+function build_turtle_from_array($subject, $data, $things) {
+    $query = prefix();
+    $query .= ' INSERT DATA { <' . $subject . '> ';
+
+    // Append simple data items, such as identifier, title, etc.
     foreach ($data as $key => $value) {
         $query .= $key . ' "' . $value . '";';
     }
 
-    $query .= 'rdf:type <' . $type . '>.';
-    $query .= $postfix;
+    // Append more complex data types, such as rdf:type, other objects.
+    $count = 0;
+    foreach ($things as $key => $value) {
+        $query .= $key . ' <' . $value . '>';
+        if ($count < count($things) - 1)
+            $query .= ';';
+        $count += 1;
+    }
+    $query .= '.}';
+
+    // Return result.
     return $query;
 }
 
-function linkedin_company_to_rdf($data) {
-    $ch = curl_init();
+function stardog_execute_query($query) {
     $url = 'http://rexvalkering.nl:5820/iwa/query';
-    $prefix = prefix();
-    $subject = 'https://www.linkedin.com/company/li_' . $data->id;
-    $prefix = $prefix.' INSERT DATA { <' . $subject . '> ';
-    $postfix = '}';
-    $type = 'http://iwa.rexvalkering.nl/Company';
 
-    $data_array = array(
-        'dc:identifier' => 'li_' . $data->id,
-        'dc:title' => $data->name
-    ); 
-
-    $data = array(
-        'query' => build_turtle_from_array($prefix, $data_array, $type, $postfix)
-    ); 
+    // Embed the query in an array.
+    $data = array('query' => $query); 
 
     // Remove double whitespace for faster transfer.
     $data['query'] = preg_replace('/[\s]+/mu', ' ', $data['query']);
@@ -40,6 +42,9 @@ function linkedin_company_to_rdf($data) {
         'Content-Type' => 'text/turtle'
     );
 
+    // Setup curl and make a POST request to Stardog, requesting the query
+    // to be executed.
+    $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, count($data));
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
@@ -47,22 +52,41 @@ function linkedin_company_to_rdf($data) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
     $result = curl_exec($ch);
+
     return $result;
+
+}
+
+function linkedin_company_to_rdf($data) {
+    // Setup prefix and subject.
+    $subject = 'https://www.linkedin.com/company/li_c' . $data->id;
+
+    // Create data array for simple string variables.
+    $data_array = array(
+        'dc:identifier' => 'li_c' . $data->id,
+        'dc:title' => $data->name
+    ); 
+
+    // Create array for more complex datatypes.
+    $things = array(
+        'rdf:type' => 'http://iwa.rexvalkering.nl/Company'
+    );
+
+    $query =  build_turtle_from_array($subject, $data_array, $things);
+    return stardog_execute_query($query);
 }
 
 function glassdoor_company_to_rdf($data) {
-    $ch = curl_init();
-    $url = 'http://rexvalkering.nl:5820/iwa/query';
-    $subject = 'https://iwa.rexvalkering.nl/company/gd_' . $data->id;
+    // Short variable for the featured review.
+    $fr = $data->featuredReview;
 
-    $prefix = prefix();
-    $prefix = $prefix.' INSERT DATA { <' . $subject . '> ';
-    $postfix = '}';
+    // Setup prefix and subject.
+    $company_subject = 'http://iwa.rexvalkering.nl/company/gd_c' . $data->id;
+    $review_subject = 'http://iwa.rexvalkering.nl/review/gd_r' . $fr->id;
 
-    $type = 'http://iwa.rexvalkering.nl/Company';
-
-    $data_array = array(
-        'dc:identifier' => 'gd_' . $data->id,
+    // Setup array of company data, copied from Glassdoor result.
+    $company_data = array(
+        'dc:identifier' => 'gd_c' . $data->id,
         'dc:title' => $data->name,
         'iwa:website' => $data->website,
         'iwa:industry' => $data->industry,
@@ -75,27 +99,55 @@ function glassdoor_company_to_rdf($data) {
         'iwa:careerOpportunitiesRating' => $data->careerOpportunitiesRating,
         'iwa:workLifeBalanceRating' => $data->workLifeBalanceRating,
         'iwa:recommendToFriendRating' => $data->recommendToFriendRating
-        //'iwa:featuredReview' => $data->featuredReview
     ); 
 
-    $data = array(
-        'query' => build_turtle_from_array($prefix, $data_array, $type, $postfix)
-    ); 
-
-    print_r(htmlspecialchars($data['query']));
-
-    // Remove double whitespace for faster transfer.
-    $data['query'] = preg_replace('/[\s]+/mu', ' ', $data['query']);
-    $headers = array(
-        'Content-Type' => 'text/turtle'
+    // Setup array of complex datatypes for company.
+    $company_things = array(
+        'rdf:type' => 'http://iwa.rexvalkering.nl/Company',
+        'iwa:featuredReview' => 'http://iwa.rexvalkering.nl/review/gd_r' . $fr->id
     );
 
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, count($data));
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    // Setup array of review data, copied from Glassdoor review result.
+    $review_data = array(
+        'dc:identifier' => 'gd_r' . $fr->id,
+        'dc:location' => $fr->location,
+        'dc:dateSubmitted' => $fr->reviewDateTime,
+        'dc:title' => $fr->headline,
+        'iwa:jobTitle' => $fr->jobTitle,
+        'iwa:jobTitleFromDb' => $fr->jobTitleFromDb,
+        'iwa:pros' => htmlspecialchars($fr->pros),
+        'iwa:cons' => htmlspecialchars($fr->cons),
+        'iwa:overall' => $fr->overall,
+        'iwa:overallNumeric' => $fr->overallNumeric
+    );
 
-    $result = curl_exec($ch);
-    return $result;
+    // Set up array of complex datatypes for review.
+    $review_things = array(
+        'rdf:type' => 'http://iwa.rexvalkering.nl/Review',
+        'iwa:ofCompany' => 'http://iwa.rexvalkering.nl/company/gd_c' . $data->id
+    );
+
+    $query = build_turtle_from_array($company_subject, $company_data, $company_things);
+    //print_r(htmlspecialchars($query));
+
+    $result = stardog_execute_query($query);
+    //print_r($result);
+
+    $query = build_turtle_from_array($review_subject, $review_data, $review_things);
+    print_r($query);
+    $result = stardog_execute_query($query);
+    print_r($result);
+    return true;
 }
+
+function stardog_get_company_by_name($name) {
+   $query = prefix() . '
+        SELECT DISTINCT ?company ?review WHERE {
+            ?company a iwa:Company ;
+                dc:title "' . $name . '" ;
+                iwa:featuredReview ?review .
+        }';
+
+    return stardog_execute_query($query);
+}
+
