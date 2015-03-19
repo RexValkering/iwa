@@ -23,7 +23,9 @@ require_once("include/includes.php"); ?>
 
                 <h2 id="about"></h2>
 
-                <p>Insert Wikipedia summary here</p>
+                <table id="dbpedia">
+                    
+                </table>
 
                 <h2>More information</h2>
 

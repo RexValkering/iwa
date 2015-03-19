@@ -90,3 +90,9 @@ body {
     float: left;
     padding: 0 20px;
 }
+
+#application table tr td,
+#application table tr th {
+    vertical-align: top;
+    padding: 5px;
+}
