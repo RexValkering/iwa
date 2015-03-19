@@ -142,12 +142,22 @@ function glassdoor_company_to_rdf($data) {
 
 function stardog_get_company_by_name($name) {
    $query = prefix() . '
-        SELECT DISTINCT ?company ?review WHERE {
+        SELECT DISTINCT ?key ?object WHERE {
             ?company a iwa:Company ;
-                dc:title "' . $name . '" ;
-                iwa:featuredReview ?review .
+                ?key ?object ;
+                dc:title "' . $name . '" .
         }';
 
     return stardog_execute_query($query);
 }
 
+function stardog_get_company_by_id($id) {
+   $query = prefix() . '
+        SELECT DISTINCT ?key ?object WHERE {
+            ?company a iwa:Company ;
+                ?key ?object ;
+                dc:identifier "' . $id . '" .
+        }';
+
+    return stardog_execute_query($query);
+}
