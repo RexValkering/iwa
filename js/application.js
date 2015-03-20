@@ -26,7 +26,7 @@ var app = {
     openJob: function(event) {
         var job = JSON.parse($(event.target).data('raw'));
 
-        // $('h2#jobtitle', 'div#job').html(job.title);
+        $('h2#jobtitle', 'div#job').html(job.company.name);
         $('p#description', 'div#job').html(job.descriptionSnippet + ' (...)');
         $('h2#about', 'div#job').html('About ' + job.company.name);
 
