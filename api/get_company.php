@@ -6,34 +6,33 @@ if (!isset($_GET['id']) && !isset($_GET['name'])) {
 }
 
 $result = Null;
-if (isset($_GET['id'])) {
-    $result = stardog_get_company_by_id($_GET['id']);
-}
-else {
-    $result = stardog_get_company_by_name($_GET['name']);
+if (isset($_GET['id'])) 
+    $result = json_decode(stardog_get_company_by_id($_GET['id']));
+else
+    $result = json_decode(stardog_get_company_by_name($_GET['name']));
 
-}
-print_r($result);
-exit;
-if (true) {
-    // No results were found.
-    echo "No results found.";
+//print_r($result->results->bindings);
+$array = sparql_result_to_array($result);
+print_r($array);
+//exit;
+
+if ($array == [])
+    exit(json_encode($array));
+
+if (!isset($array["http://iwa.rexvalkering.nl/website"])) {
 
     // Find company in Glassdoor, export data to RDF store.
-    $company = glassdoor_get_company($_GET['name']);
+    $company = glassdoor_get_company($array['http://iwa.rexvalkering.nl/name']);
+    print_r($company->response->employers[0]);
     glassdoor_company_to_rdf($company->response->employers[0]);
 
     // Execute query again.
-    $result = stardog_get_company_by_name($_GET['name']);
-    $xml_result = $xml->results->result;
-
-    if (((string) $xml_result) == "") {
-        // Nothing happens.
-        echo "Cannot find any results in Glassdoor.";
-        exit;
-    }
+    if (isset($_GET['id'])) 
+        $result = json_decode(stardog_get_company_by_id($_GET['id']));
+    else
+        $result = json_decode(stardog_get_company_by_name($_GET['name']));
+    $array = sparql_result_to_array($result);
 }
 
-
-exit($result);
+exit(json_encode($array));
 

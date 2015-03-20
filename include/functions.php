@@ -88,19 +88,16 @@ function traverse_xml($xml, $spaces) {
 /**
  *  Convert a SPARQL XML result to a JSON object.
  */
-function sparql_result_to_json($xml) {
-    $final_array = array();
-    foreach ($xml->results as $results) {
-        $result_array = array();
-        foreach ($results->result as $result) {
-            $key = htmlspecialchars_decode($result->binding[0]->uri);    
-            $value = $result->binding[1];
-            if ($value->uri != "") 
-                $result_array[(string) $key] = (string) $value->uri;
-            else
-                $result_array[(string) $key] = (string) $value->literal;
-        }
-        $final_array[] = $result_array;
+function sparql_result_to_array($result) {
+    $result_array = array();
+
+    if (!$result)
+        return $result_array;
+    
+    foreach ($result->results->bindings as $r) {
+        $key = $r->key->value;
+        $value = $r->object->value;
+        $result_array[(string) $key] = (string) $value;
     }
-    return json_encode($final_array);
+    return $result_array;
 }

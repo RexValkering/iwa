@@ -20,6 +20,6 @@ $jobs = $jobs->jobs->values;
 
 foreach ($jobs as $job) {
     linkedin_company_to_rdf($job->company);
-}
-
+    //exit;
+}   
 exit($response);
