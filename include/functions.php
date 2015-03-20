@@ -73,3 +73,34 @@ function validate_ip($ip) {
     }
     return true;
 }
+
+function traverse_xml($xml, $spaces) {
+    for ($i = 0; $i < $spaces; $i++)
+        echo "&nbsp;";
+    echo $xml->getName() . "<br />";
+    if ($xml->children()) {
+        foreach ($xml->children() as $child) {
+            traverse_xml($child, $spaces + 1);
+        }
+    }
+}
+
+/**
+ *  Convert a SPARQL XML result to a JSON object.
+ */
+function sparql_result_to_json($xml) {
+    $final_array = array();
+    foreach ($xml->results as $results) {
+        $result_array = array();
+        foreach ($results->result as $result) {
+            $key = htmlspecialchars_decode($result->binding[0]->uri);    
+            $value = $result->binding[1];
+            if ($value->uri != "") 
+                $result_array[(string) $key] = (string) $value->uri;
+            else
+                $result_array[(string) $key] = (string) $value->literal;
+        }
+        $final_array[] = $result_array;
+    }
+    return json_encode($final_array);
+}

@@ -30,16 +30,17 @@ function build_turtle_from_array($subject, $data, $things) {
     return $query;
 }
 
-function stardog_execute_query($query) {
+function stardog_execute_query($query, $json = false) {
     $url = 'http://rexvalkering.nl:8080/openrdf-sesame/repositories/iwa';
 
     // Embed the query in an array.
-    $data = array('query' => $query); 
+    $data = array('query' => $query, 'output' => 'json'); 
 
     // Remove double whitespace for faster transfer.
     $data['query'] = preg_replace('/[\s]+/mu', ' ', $data['query']);
     $headers = array(
-        'Content-Type' => 'text/turtle'
+        'Content-Type' => 'text/turtle',
+        'Accept' => 'application/rdf+xml'
     );
 
     // Setup curl and make a POST request to Stardog, requesting the query
@@ -148,7 +149,7 @@ function stardog_get_company_by_name($name) {
                 iwa:name "' . $name . '" .
         }';
 
-    return stardog_execute_query($query);
+    return stardog_execute_query($query, true);
 }
 
 function stardog_get_company_by_id($id) {
@@ -159,5 +160,5 @@ function stardog_get_company_by_id($id) {
                 dc:identifier "' . $id . '" .
         }';
 
-    return stardog_execute_query($query);
+    return stardog_execute_query($query, true);
 }
