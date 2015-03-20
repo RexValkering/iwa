@@ -27,7 +27,7 @@ require_once("include/includes.php"); ?>
                     
                 </table>
 
-                <h2>More information</h2>
+                <h2>Glassdoor reviews</h2>
 
                 <table id="glassdoor">
 

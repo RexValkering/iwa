@@ -32,14 +32,14 @@ var app = {
 
         $('div#job').show();
 
-        app.linkedin.load(
-            job.id
-        );
+        // app.linkedin.load(
+        //     job.id
+        // );
         app.dbpedia.load(
             app.normalizeCompanyName(job.company.name)
         );
         app.glassdoor.load(
-            app.normalizeCompanyName(job.company.name)
+            job.company.id
         );
     },
     linkedin: {
@@ -155,7 +155,17 @@ var app = {
         },
     },
     glassdoor: {
-        load: function(company) {
+        prefix: 'http://iwa.rexvalkering.nl/',
+        reviewfields: {
+            careerOpportunitiesRating:      'Career Opportunities',
+            compensationAndBenefitsRating:  'Compensation and Benefits',
+            cultureAndValuesRating:         'Culture and Values',
+            seniorLeadershipRating:         'Senior Leadership',
+            workLifeBalanceRating:          'Work/Life Balance',
+            recommendToFriendRating:        'Recommend to Friend',
+            overallRating:                  'Overall'
+        },
+        load: function(companyid) {
             $('table#glassdoor').html('<tr><td>Loading...</td></tr>');
 
             $.ajax({
@@ -163,14 +173,31 @@ var app = {
                 'method': 'get',
                 'dataType': 'json',
                 'data': {
-                    // 'id': 'li_c' + company
-                    'name': company
+                    'id': 'li_c' + companyid
                 },
-                'success': app.glassdoor.show
+                'success': app.glassdoor.show,
+                'failure': app.glassdoor.fail
             }); 
         },
         show: function(data) {
-console.log(data);
+            if (data.error) {
+                $('table#glassdoor').html('<tr><td>No Glassdoor entry found...</td></tr>');
+            } else {
+                $('table#glassdoor').html('');
+
+                $.each(app.glassdoor.reviewfields, function(name, label) {
+                    $('<tr></tr>').append($('<th></th>').html(label))
+                                  .append($('<td></td>').html(
+                                      $('<div class="stars"></div>').css('width', 118 * (data[app.glassdoor.prefix + name] * 0.2))
+                                  ))
+                                  .append($('<td></td>').html('(' + data[app.glassdoor.prefix + name] + '/5)'))
+                                  .appendTo('table#glassdoor');
+                });
+                $('<tr></tr>').append($('<td colspan="3"></td>').html("From " + data[app.glassdoor.prefix + 'numberOfRatings'] + ' ratings')).appendTo('table#glassdoor');
+            }
+        },
+        fail: function() {
+            $('table#dbpedia').html('<tr><td>No Glassdoor entry found...</td></tr>');
         }
     },
     normalizeCompanyName: function(name) {

@@ -125,7 +125,7 @@ function linkedin_company_to_rdf($data) {
 
 function glassdoor_company_to_rdf($data) {
     // Short variable for the featured review.
-    $fr = $data->featuredReview;
+    $fr = property_exists($data, 'featuredReview') ? $data->featuredReview : false;
 
     // Setup prefix and subject.
     $company_subject = 'http://iwa.rexvalkering.nl/company/gd_c' . $data->id;
@@ -133,39 +133,39 @@ function glassdoor_company_to_rdf($data) {
 
     // Setup array of company data, copied from Glassdoor result.
     $company_data = array(
-        'dc:identifier' => 'gd_c' . $data->id,
-        'iwa:name' => $data->name,
-        'iwa:website' => $data->website,
-        'iwa:industry' => $data->industry,
-        'iwa:numberOfRatings' => $data->numberOfRatings,
-        'iwa:logo' => $data->squareLogo,
-        'iwa:overallRating' => $data->overallRating,
-        'iwa:cultureAndValuesRating' => $data->cultureAndValuesRating,
-        'iwa:seniorLeadershipRating' => $data->seniorLeadershipRating,
+        'dc:identifier'                     => 'gd_c' . $data->id,
+        'iwa:name'                          => $data->name,
+        'iwa:website'                       => $data->website,
+        'iwa:industry'                      => $data->industry,
+        'iwa:numberOfRatings'               => $data->numberOfRatings,
+        'iwa:logo'                          => $data->squareLogo,
+        'iwa:overallRating'                 => $data->overallRating,
+        'iwa:cultureAndValuesRating'        => $data->cultureAndValuesRating,
+        'iwa:seniorLeadershipRating'        => $data->seniorLeadershipRating,
         'iwa:compensationAndBenefitsRating' => $data->compensationAndBenefitsRating,
-        'iwa:careerOpportunitiesRating' => $data->careerOpportunitiesRating,
-        'iwa:workLifeBalanceRating' => $data->workLifeBalanceRating,
-        'iwa:recommendToFriendRating' => $data->recommendToFriendRating
+        'iwa:careerOpportunitiesRating'     => $data->careerOpportunitiesRating,
+        'iwa:workLifeBalanceRating'         => $data->workLifeBalanceRating,
+        'iwa:recommendToFriendRating'       => $data->recommendToFriendRating
     ); 
 
     // Setup array of complex datatypes for company.
     $company_things = array(
-        'rdf:type' => 'http://iwa.rexvalkering.nl/Company',
-        'iwa:featuredReview' => 'http://iwa.rexvalkering.nl/review/gd_r' . $fr->id
+        'rdf:type'           => 'http://iwa.rexvalkering.nl/Company',
+        'iwa:featuredReview' => $fr ? 'http://iwa.rexvalkering.nl/review/gd_r' . $fr->id : null
     );
 
     // Setup array of review data, copied from Glassdoor review result.
     $review_data = array(
-        'dc:identifier' => 'gd_r' . $fr->id,
-        'dc:location' => $fr->location,
-        'dc:dateSubmitted' => $fr->reviewDateTime,
-        'iwa:name' => $fr->headline,
-        'iwa:jobTitle' => $fr->jobTitle,
-        'iwa:jobTitleFromDb' => $fr->jobTitleFromDb,
-        'iwa:pros' => htmlspecialchars($fr->pros),
-        'iwa:cons' => htmlspecialchars($fr->cons),
-        'iwa:overall' => $fr->overall,
-        'iwa:overallNumeric' => $fr->overallNumeric
+        'dc:identifier'         => $fr ? 'gd_r' . $fr->id : null,
+        'dc:location'           => $fr ? $fr->location : null,
+        'dc:dateSubmitted'      => $fr ? $fr->reviewDateTime : null,
+        'iwa:name'              => $fr ? $fr->headline : null,
+        'iwa:jobTitle'          => $fr ? $fr->jobTitle : null,
+        // 'iwa:jobTitleFromDb' => $fr ? $fr->jobTitleFromDb : null,
+        'iwa:pros'              => $fr ? htmlspecialchars($fr->pros) : null,
+        'iwa:cons'              => $fr ? htmlspecialchars($fr->cons) : null,
+        'iwa:overall'           => $fr ? $fr->overall : null,
+        'iwa:overallNumeric'    => $fr ? $fr->overallNumeric : null,
     );
 
     // Set up array of complex datatypes for review.

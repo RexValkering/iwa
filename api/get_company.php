@@ -13,17 +13,20 @@ else
 
 //print_r($result->results->bindings);
 $array = sparql_result_to_array($result);
-print_r($array);
+// print_r($array);
 //exit;
 
 if ($array == [])
     exit(json_encode($array));
 
 if (!isset($array["http://iwa.rexvalkering.nl/website"])) {
-
     // Find company in Glassdoor, export data to RDF store.
     $company = glassdoor_get_company($array['http://iwa.rexvalkering.nl/name']);
-    print_r($company->response->employers[0]);
+    // print_r($company->response->employers[0]);
+    
+    if (empty($company->response->employers))
+        exit(json_encode(['error' => 'companynotfound']));
+
     glassdoor_company_to_rdf($company->response->employers[0]);
 
     // Execute query again.
@@ -33,6 +36,6 @@ if (!isset($array["http://iwa.rexvalkering.nl/website"])) {
         $result = json_decode(stardog_get_company_by_name($_GET['name']));
     $array = sparql_result_to_array($result);
 }
-
+// var_dump($array);die('!');
 exit(json_encode($array));
 
