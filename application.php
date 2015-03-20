@@ -18,7 +18,7 @@ require_once("include/includes.php"); ?>
                 <!-- filled by js -->
             </ul>
             <div id="job" style="display:none">
-                <h2 id="title">Job title?</h2>
+                <h2 id="jobtitle">Job title?</h2>
                 <p  id="description"></p>
 
                 <h2 id="about"></h2>
