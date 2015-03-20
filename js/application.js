@@ -27,7 +27,7 @@ var app = {
 
         // $('h2#jobtitle', 'div#job').html(job.title);
         $('p#description', 'div#job').html(job.descriptionSnippet + ' (...)');
-        $('h2#about', 'div#job').html('Over ' + job.company.name);
+        $('h2#about', 'div#job').html('About ' + job.company.name);
 
         $('div#job').show();
 
