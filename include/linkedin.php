@@ -44,3 +44,9 @@ function linkedin_get_suggested_jobs() {
     $result = linkedin_get_request($url, ["format" => "json"]);
     return json_decode($result);
 }
+
+function linkedin_get_job_by_id($id) {
+    $url = "https://api.linkedin.com/v1/jobs/" . $id;
+    $result = linkedin_get_request($url, ["format" => "json"]);
+    return json_decode($result);
+}
