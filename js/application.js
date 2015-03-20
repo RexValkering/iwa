@@ -5,6 +5,7 @@ var app = {
     },
     setObservers: function() {
         $('body').on('click', 'ul#jobs li', app.openJob);
+        $('body').on('click', 'a#more', app.openMore);
     },
     getJobs: function() {
         $.ajax({
@@ -129,6 +130,16 @@ var app = {
                         case lang !== undefined && lang != 'en':
                             return;
                             break;
+                        case key == 'abstract':
+                            var shortAbstract = value.substring(0,200);
+                            var more = value.substring(200, 9999);
+                            
+                            value = $('<p></p>').html(shortAbstract);
+                            if (more.length != 0) {
+                                $(value).append($('<a></a>', {'id': 'more', 'href': '#'}).html(' read more..'))
+                                        .append($('<span></span>', {'class': 'more'}).hide().html(more));
+                            }
+                            break;
                         case key == 'thumbnail':
                             value = $('<img></img>', {'src': value, 'alt': '', 'height': '80px'});
                             break;
@@ -168,6 +179,11 @@ console.log(data);
                    .replace('Netherlands', '')
                    .replace('Nederland', '')
                    .trim();
+    },
+    openMore: function(event) {
+        event.preventDefault();
+        $(this).hide();
+        $(this).siblings('span.more').show();
     }
 };
 $(app.init);
