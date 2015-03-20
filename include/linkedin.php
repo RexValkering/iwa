@@ -1,7 +1,7 @@
 <?php
 require_once("includes.php");
 
-function linkedin_get_request($url, $data) {
+function linkedin_get_request($url, $data, $debug = false) {
     $headers = array(
         "Accept: application/json",
         "Authorization: Bearer " . linkedin_access_token(),
@@ -16,7 +16,11 @@ function linkedin_get_request($url, $data) {
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
+    if ($debug) curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+
     $result = curl_exec($ch);
+
+    if ($debug) { var_dump(curl_getinfo($ch, CURLINFO_HEADER_OUT));die(); }
 
     //close connection
     curl_close($ch);
@@ -37,6 +41,12 @@ function linkedin_get_suggested_companies() {
 
 function linkedin_get_suggested_jobs() {
     $url = "https://api.linkedin.com/v1/people/~/suggestions/job-suggestions:(jobs)";
+    $result = linkedin_get_request($url, ["format" => "json"]);
+    return json_decode($result);
+}
+
+function linkedin_get_job_by_id($id) {
+    $url = "https://api.linkedin.com/v1/jobs/" . $id;
     $result = linkedin_get_request($url, ["format" => "json"]);
     return json_decode($result);
 }

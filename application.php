@@ -29,7 +29,9 @@ require_once("include/includes.php"); ?>
 
                 <h2>More information</h2>
 
-                <p>Insert Glassdoor summary here</p>
+                <table id="glassdoor">
+
+                </table>
             </div>
             <div class="text-center" id="actions">
                 <a href="<?php echo site_root(); ?>auth/logout.php">Logout</a>
