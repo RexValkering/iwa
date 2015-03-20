@@ -15,7 +15,7 @@ $url = linkedin_login_url();
 <div id="landing" class="container">
     <div class="row">
         <div class="col-xs-12 text-center">
-        <h3>Intelligent application title</h3>
+        <h3>Intelligent Web Applications</h3>
         <?php display_error(); ?>
         </div>
     </div>
@@ -25,15 +25,6 @@ $url = linkedin_login_url();
         <a href="<?php echo $url; ?>"><div id="linkedin-login"></div></a></div>
     </div>
 
-    <!-- Sign in with account -->
-    <div class="row top-buffer">
-        <div class="col-xs-12 text-center">
-        <a><button id="application-login" type="button" class="btn btn-default">Sign in with your application account</button></a></div>
-    </div>
-
-    <div class="row top-buffer-large">
-        <div class="col-xs-12 text-center">Disclaimer | Privacy Policy | Contact | About</div>
-    </div>
 </div>
 </body>
 </html>

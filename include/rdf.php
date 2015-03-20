@@ -31,7 +31,7 @@ function build_turtle_from_array($subject, $data, $things) {
 }
 
 function stardog_execute_query($query) {
-    $url = 'http://rexvalkering.nl:5820/iwa/query';
+    $url = 'http://rexvalkering.nl:8080/openrdf-sesame/repositories/iwa';
 
     // Embed the query in an array.
     $data = array('query' => $query); 
@@ -64,7 +64,7 @@ function linkedin_company_to_rdf($data) {
     // Create data array for simple string variables.
     $data_array = array(
         'dc:identifier' => 'li_c' . $data->id,
-        'dc:title' => $data->name
+        'iwa:name' => $data->name
     ); 
 
     // Create array for more complex datatypes.
@@ -87,7 +87,7 @@ function glassdoor_company_to_rdf($data) {
     // Setup array of company data, copied from Glassdoor result.
     $company_data = array(
         'dc:identifier' => 'gd_c' . $data->id,
-        'dc:title' => $data->name,
+        'iwa:name' => $data->name,
         'iwa:website' => $data->website,
         'iwa:industry' => $data->industry,
         'iwa:numberOfRatings' => $data->numberOfRatings,
@@ -112,7 +112,7 @@ function glassdoor_company_to_rdf($data) {
         'dc:identifier' => 'gd_r' . $fr->id,
         'dc:location' => $fr->location,
         'dc:dateSubmitted' => $fr->reviewDateTime,
-        'dc:title' => $fr->headline,
+        'iwa:name' => $fr->headline,
         'iwa:jobTitle' => $fr->jobTitle,
         'iwa:jobTitleFromDb' => $fr->jobTitleFromDb,
         'iwa:pros' => htmlspecialchars($fr->pros),
@@ -145,7 +145,7 @@ function stardog_get_company_by_name($name) {
         SELECT DISTINCT ?key ?object WHERE {
             ?company a iwa:Company ;
                 ?key ?object ;
-                dc:title "' . $name . '" .
+                iwa:name "' . $name . '" .
         }';
 
     return stardog_execute_query($query);

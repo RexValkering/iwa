@@ -18,7 +18,6 @@ $xml = simplexml_load_string($result);
 if (((string) $xml->results->result) == "") {
     // No results were found.
     echo "No results found.";
-    exit;
 
     // Find company in Glassdoor, export data to RDF store.
     $company = glassdoor_get_company($_GET['name']);
